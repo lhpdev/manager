@@ -1,19 +1,60 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { connect } from 'react-redux';
+import { View, FlatList, StyleSheet,  } from 'react-native';
+import { employeesFetch } from '../actions';
+import ListItem from './ListItem';
+import { Spinner } from './common';
 
 class EmployeeList extends Component {
+  state = {
+    loading: true
+  }
+
+  componentWillMount() {
+    this.props.employeesFetch().then(() => {
+      this.setState({ loading: false });
+    });
+  }
+
+  renderItem(employee) {
+    return <ListItem employee={employee} />;
+  }
+
   render() {
+    const { loading } = this.state;
+
+    console.log('outside of action');
+    console.log(this.props.employees);
+
     return (
-      <View>
-        <Text>Employee List</Text>
-        <Text>Employee List</Text>
-        <Text>Employee List</Text>
-        <Text>Employee List</Text>
-        <Text>Employee List</Text>
-        <Text>Employee List</Text>
+      <View style={styles.container}>
+        { !loading &&
+        <FlatList
+          data={this.props.employees}
+          renderItem={this.renderItem}
+        />
+        }
+        { loading &&
+          <Spinner />
+        }
       </View>
     );
   }
 }
 
-export default EmployeeList;
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+  },
+});
+
+const mapStateToProps = state => {
+  var employees = _.map(state.employees, (val, uid) => {
+    return { ...val, uid };
+  });
+
+  return { employees };
+};
+
+export default connect(mapStateToProps, { employeesFetch })(EmployeeList);
