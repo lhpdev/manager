@@ -11,10 +11,9 @@ class EmployeeList extends Component {
     loading: true
   }
 
-  componentWillMount() {
-    this.props.employeesFetch().then(() => {
-      this.setState({ loading: false });
-    });
+  componentDidMount() {
+    this.props.employeesFetch();
+    this.setState({ loading: false });
   }
 
   renderItem(employee) {
@@ -56,5 +55,13 @@ const mapStateToProps = state => {
 
   return { employees };
 };
+
+
+// const mapStateToProps = ({ auth }) => {
+//   const { email, password, error, loading } = auth;
+
+//   return { email, password, error, loading }
+// };
+
 
 export default connect(mapStateToProps, { employeesFetch })(EmployeeList);
